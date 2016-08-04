@@ -1,9 +1,9 @@
 DROP TABLE foos;
 
 CREATE TABLE foos (
-    id bigserial NOT NULL PRIMARY KEY,
-    name text,
-    barz integer[]
+  id   BIGSERIAL  NOT NULL PRIMARY KEY,
+  name TEXT       NOT NULL,
+  barz INTEGER [] NOT NULL
 );
 
 INSERT INTO foos VALUES (1, 'aaa', '{1,2,3}');
