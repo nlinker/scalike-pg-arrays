@@ -1,7 +1,7 @@
 DROP TABLE foos;
 
 CREATE TABLE foos (
-  id   BIGSERIAL  NOT NULL PRIMARY KEY,
+  id   SERIAL     NOT NULL PRIMARY KEY,
   name TEXT       NOT NULL,
   barz INTEGER [] NOT NULL
 );

@@ -5,8 +5,7 @@ import scalikejdbc._
 
 case class Foo(id: Long,
                name: String,
-               barz: Array[Any])
-
+               barz: List[Int])
 
 object Foo extends SQLSyntaxSupport[Foo] {
 
@@ -17,12 +16,16 @@ object Foo extends SQLSyntaxSupport[Foo] {
   override val columns = Seq("id", "name", "barz")
 
   def apply(f: SyntaxProvider[Foo])(rs: WrappedResultSet): Foo = apply(f.resultName)(rs)
-  def apply(f: ResultName[Foo])(rs: WrappedResultSet): Foo = new Foo(
-    id = rs.get(f.id),
-    name = rs.get(f.name),
-    barz = rs.get(f.barz)
-  )
-
+  def apply(f: ResultName[Foo])(rs: WrappedResultSet): Foo = {
+    new Foo(
+      id = rs.get(f.id),
+      name = rs.get(f.name),
+      barz = rs.array(f.barz).getArray()
+          .asInstanceOf[Array[Integer]]
+          .map(_.intValue())
+          .toList
+    )
+  }
   val f = Foo.syntax("f")
 
   override val autoSession = AutoSession
@@ -33,11 +36,13 @@ object Foo extends SQLSyntaxSupport[Foo] {
   }
 
   def findAll()(implicit session: DBSession): List[Foo] = {
-    sql"""SELECT ${f.result.*} FROM ${Foo as f}""".map(Foo(f.resultName)).list.apply()
+    sql"""SELECT ${f.result.*} FROM ${Foo as f}"""
+        .map(Foo(f.resultName)).list.apply()
   }
 
   def countAll()(implicit session: DBSession): Long = {
-    sql"""SELECT count(1) FROM ${Foo.table}""".map(rs => rs.long(1)).single.apply().get
+    sql"""SELECT count(1) FROM ${Foo.table}"""
+        .map(rs => rs.long(1)).single.apply().get
   }
 
   def findBy(where: SQLSyntax)(implicit session: DBSession): Option[Foo] = {
@@ -56,22 +61,22 @@ object Foo extends SQLSyntaxSupport[Foo] {
   }
 
   def create(name: String,
-             barz: Array[Any])(implicit session: DBSession): Foo = {
+             barz: List[Int])(implicit session: DBSession): Foo = {
     val generatedKey =
       sql"""
       INSERT INTO ${Foo.table} (
-        ${column.name},
-        ${column.barz}
+        ${column.name}
+      , ${column.barz}
       ) VALUES (
-        ${name},
-        ${barz}
+        ${name}
+      , ARRAY[${barz}]
       )
       """.updateAndReturnGeneratedKey.apply()
-
     Foo(
       id = generatedKey,
       name = name,
-      barz = barz)
+      barz = barz
+    )
   }
 
   def batchInsert(entities: Seq[Foo])(implicit session: DBSession): Seq[Int] = {
@@ -86,7 +91,7 @@ object Foo extends SQLSyntaxSupport[Foo] {
         barz
       ) values (
         {name},
-        {barz}
+        ARRAY[{barz}]
       )""").batchByName(params: _*).apply()
   }
 
@@ -97,7 +102,7 @@ object Foo extends SQLSyntaxSupport[Foo] {
       SET
         ${column.id} = ${entity.id},
         ${column.name} = ${entity.name},
-        ${column.barz} = ${entity.barz}
+        ${column.barz} = ARRAY[${entity.barz}]
       WHERE
         ${column.id} = ${entity.id}
       """.update.apply()
