@@ -5,7 +5,8 @@ import scalikejdbc._
 
 case class Foo(id: Long,
                name: String,
-               barz: List[Int])
+               barz: List[Int],
+               clrz: List[Color])
 
 object Foo extends SQLSyntaxSupport[Foo] {
 
@@ -13,7 +14,7 @@ object Foo extends SQLSyntaxSupport[Foo] {
 
   override val tableName = "foos"
 
-  override val columns = Seq("id", "name", "barz")
+  override val columns = Seq("id", "name", "barz", "clrz")
 
   def apply(f: SyntaxProvider[Foo])(rs: WrappedResultSet): Foo = apply(f.resultName)(rs)
   def apply(f: ResultName[Foo])(rs: WrappedResultSet): Foo = {
@@ -23,6 +24,10 @@ object Foo extends SQLSyntaxSupport[Foo] {
       barz = rs.array(f.barz).getArray()
           .asInstanceOf[Array[Integer]]
           .map(_.intValue())
+          .toList,
+      clrz = rs.array(f.clrz).getArray()
+          .asInstanceOf[Array[String]]
+          .map(Color.valueOf(_))
           .toList
     )
   }
@@ -60,22 +65,26 @@ object Foo extends SQLSyntaxSupport[Foo] {
         .map(_.long(1)).single.apply().get
   }
 
-  def create(name: String,
-             barz: List[Int])(implicit session: DBSession): Foo = {
+  def create(name: String, barz: List[Int], clrz: List[Color])
+            (implicit session: DBSession): Foo = {
+    val clrzStr = clrz.map(_.toString)
     val generatedKey =
       sql"""
       INSERT INTO ${Foo.table} (
         ${column.name}
       , ${column.barz}
+      , ${column.clrz}
       ) VALUES (
         ${name}
       , ARRAY[${barz}]
+      , ARRAY[${clrzStr}]::color[]
       )
       """.updateAndReturnGeneratedKey.apply()
     Foo(
       id = generatedKey,
       name = name,
-      barz = barz
+      barz = barz,
+      clrz = clrz
     )
   }
 
@@ -83,15 +92,17 @@ object Foo extends SQLSyntaxSupport[Foo] {
     val params: Seq[Seq[(Symbol, Any)]] = entities.map(
       entity =>
         Seq(
-          'name -> entity.name,
-          'barz -> entity.barz))
+          'name → entity.name,
+          'barz → entity.barz,
+          'clrz → entity.clrz.map(_.toString)))
     SQL(
       """insert into foos(
         name,
         barz
       ) values (
         {name},
-        ARRAY[{barz}]
+        ARRAY[{barz}],
+        ARRAY[{clrz}]::color[]
       )""").batchByName(params: _*).apply()
   }
 
@@ -102,7 +113,8 @@ object Foo extends SQLSyntaxSupport[Foo] {
       SET
         ${column.id} = ${entity.id},
         ${column.name} = ${entity.name},
-        ${column.barz} = ARRAY[${entity.barz}]
+        ${column.barz} = ARRAY[${entity.barz}],
+        ${column.clrz} = ARRAY[${entity.clrz.map(_.toString)}]::color[]
       WHERE
         ${column.id} = ${entity.id}
       """.update.apply()

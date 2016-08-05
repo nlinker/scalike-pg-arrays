@@ -38,7 +38,9 @@ class FooSpec extends fixture.FlatSpec with Matchers with AutoRollback {
     count should be >(0L)
   }
   it should "create new record" in { implicit session =>
-    val created = Foo.create(name = "MyString", barz = List[Int]())
+    val created = Foo.create(name = "MyString",
+                             barz = List[Int](),
+                             clrz = List[Color]())
     created should not be null
   }
   it should "save a record" in { implicit session =>
