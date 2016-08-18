@@ -1,5 +1,7 @@
 # Scalikejdbc example to use Postgresql ARRAY column
 
+The example shows how to use ARRAY of integers nd enums in (wonderful) [scalikejdbc](http://scalikejdbc.org) library. The ready-to-run class is `Main`, the mapping class is `Foo` corresponding to the table `foos` in the database.
+
 ## How to run the example
 
 1. Install sbt (http://www.scala-sbt.org/0.13/docs/Setup.html)
