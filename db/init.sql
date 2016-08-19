@@ -1,5 +1,5 @@
-DROP TABLE foos;
-DROP TYPE color;
+DROP TABLE IF EXISTS foos;
+DROP TYPE IF EXISTS color;
 
 CREATE TYPE color AS ENUM ('Red', 'Green', 'Blue');
 
