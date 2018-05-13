@@ -9,6 +9,23 @@ The example shows how to use ARRAY of integers and enums with (wonderful) [scali
 3. Prepare the database `./db/init.sh`
 4. Execute `sbt run`
 
+## The essential part
+
+```scala
+    case class Foo(
+      id: Long,
+      name: String,
+      barz: List[Int],    // mapped to the column of type 'array of ints'
+      clrz: List[Color]   // mapped to the column of type 'array of colors' (color is a users type)
+    )
+
+    // usage
+    println(s"insert several foos")
+    Foo.create("aaa", List(1,2,3), List(Color.Red, Color.Red))
+    Foo.create("bbb", List(2,3,4), List(Color.Red, Color.Green))
+    Foo.create("ccc", List(3,4,5), List(Color.Red, Color.Blue))
+```
+
 ## The expected log
 
 ```
