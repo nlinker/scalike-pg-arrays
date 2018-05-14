@@ -47,10 +47,3 @@ update the last one
 19:55:39.008 [main] DEBUG scalikejdbc.StatementExecutor$$anon$1 - [SQL Execution] SELECT f.id as i_on_f, f.name as n_on_f, f.barz as b_on_f, f.clrz as c_on_f FROM public.foos f; (0 ms)
 final table contents = List(Foo(5,aaa,List(1, 2, 3),List(Red, Red)), Foo(6,bbb,List(2, 3, 4),List(Red, Green)), Foo(7,ccc,List(3, 4, 5),List(Red, Blue)), Foo(8,eee,List(1, 1, 1, 1, 1, 1),List(Green, Green, Green)))
 ```
-
-I get 10 times more traffic from [Google] [1] than from
-[Yahoo] [2] or [MSN] [3].
-
-  [1]: http://google.com/        "Google"
-  [2]: http://search.yahoo.com/  "Yahoo Search"
-  [3]: http://search.msn.com/    "MSN Search"
