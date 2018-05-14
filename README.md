@@ -4,10 +4,11 @@ The example shows how to use ARRAY of integers and enums with (wonderful) [scali
 
 ## How to run the example
 
-1. Install sbt (http://www.scala-sbt.org/0.13/docs/Setup.html)
+1. Install sbt [SBT documentation][1]
 2. Install postgresql
 3. Prepare the database `./db/init.sh`
 4. Execute `sbt run`
+[1]: http://www.scala-sbt.org/0.13/docs/Setup.html
 
 ## The essential part
 
