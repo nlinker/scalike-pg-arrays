@@ -8,6 +8,7 @@ The example shows how to use ARRAY of integers and enums with (wonderful) [scali
 2. Install postgresql
 3. Prepare the database `./db/init.sh`
 4. Execute `sbt run`
+
 [1]: http://www.scala-sbt.org/0.13/docs/Setup.html
 
 ## The essential part
